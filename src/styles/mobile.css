@@ -1,12 +1,12 @@
 
-@media only screen and (max-width: 800px)  {
+@media only screen and (max-width: 900px)  {
 
   .autocomplete-input-field {
     border-radius: 15px;
     font-size: 20px;
     padding: 5px 35px 0 35px;
     height: 35px;
-    background: url(./assets/search_black_24dp.svg) no-repeat 10px 7px;
+    background: url(../assets/search_black_24dp.svg) no-repeat 10px 7px;
     background-color: #f2f2f2;
   }
 
@@ -32,9 +32,9 @@
     margin: 0;
   }
 
-  .pokemon-card-wrapper .pokemon-details p {
+  /* .pokemon-card-wrapper .pokemon-details p {
     font-size: 4vw;
-  }
+  } */
 
   .switch-background {
     top: 15px;
@@ -57,5 +57,35 @@
   .progress-bar-label {
     font-size: 12px;
   }
+
+  .pokemon-card-info .product-view-add-and-buy-btns {
+    flex-direction: column;
+    width: 100%;
+    justify-content: initial;
+  }
+
+  .pokemon-card-info .product-view-add-and-buy-btns button {
+    width: 100%;
+  }
+
+  .pokemon-card-wrapper p.pokemon-card-description {
+    font-size: 15px;
+  }
   
+}
+
+@media only screen and (max-width: 500px)  {
+  .pokemons-wrapper .pokemon-details {
+    flex-direction: column !important;
+  }
+
+  .pokemons-wrapper .pokemon-details img {
+    width: 100% !important;
+    max-height: 200px !important;
+  }
+
+  .pokemons-wrapper .pokemon-card-info {
+    width: 100% !important;
+  }
+
 }

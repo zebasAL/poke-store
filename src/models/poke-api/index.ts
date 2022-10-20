@@ -1,1 +1,1 @@
-export {}
+export * from "../../api/lib/poke-api/schemas"
