@@ -37,7 +37,7 @@ class PokeApi {
     } catch (error: unknown) {
       if (!(error instanceof z.ZodError)) {
         throw error;
-      } else if (process.env.VERCEL_ENV !== "production") {
+      // } else if (process.env.VERCEL_ENV !== "production") {
         throw error;
       }
       console.warn("An schema must be correted", error);
