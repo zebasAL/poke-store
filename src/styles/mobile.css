@@ -1,0 +1,61 @@
+
+@media only screen and (max-width: 800px)  {
+
+  .autocomplete-input-field {
+    border-radius: 15px;
+    font-size: 20px;
+    padding: 5px 35px 0 35px;
+    height: 35px;
+    background: url(./assets/search_black_24dp.svg) no-repeat 10px 7px;
+    background-color: #f2f2f2;
+  }
+
+  div.hidden {
+    padding-top: 50px;
+  }
+
+  .pokemons-cards-container .pokemons-wrapper {
+    width: calc(33% - 10px);
+    margin: 10px 5px;
+  }
+  
+  .input-container {
+    padding: 6px 30px 6px 30px;
+  }
+
+  .pokemons-cards-container .pokemon-details p {
+    margin: 0 5px 10px 5px;
+  }
+
+  .pokemon-card-description {
+    font-size: 3vw;
+    margin: 0;
+  }
+
+  .pokemon-card-wrapper .pokemon-details p {
+    font-size: 4vw;
+  }
+
+  .switch-background {
+    top: 15px;
+    width: 40px;
+    height: 20px;
+  }
+
+  .switch-background .switch-off {
+    width: 18px;
+    height: 18px;
+    margin: 0 auto 0 3px;
+  }
+  
+  .switch-background .switch-on {
+    width: 18px;
+    height: 18px;
+    margin: 0 auto 0 20px;
+  }
+
+  .progress-bar-label {
+    font-size: 12px;
+  }
+  
+}
