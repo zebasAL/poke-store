@@ -1,6 +1,6 @@
 import { type FC, ReactElement } from 'react';
 
-interface ButtonProps {
+type ButtonProps = {
   handleLoadingButton: () => void;
   isLoading: Boolean;
 }
@@ -10,19 +10,13 @@ const LoadMoreButton: FC<ButtonProps> = ({
   isLoading,
 }): ReactElement => (
   <>
-    {
-    (isLoading)
-      ? (
-        (
-          <div className="loader">Loading...</div>
-        )
-      )
+    {isLoading
+      ? (<div className="loader">Loading...</div>)
       : (
-        <button className="load-more-pokemons-button" onClick={() => handleLoadingButton()} type="button">
+        <button disabled={isLoading} className="load-more-pokemons-button" onClick={handleLoadingButton} type="button">
           <i style={{ transform: 'rotate(45deg)' }} className="arrow" />
         </button>
-      )
-    }
+      )}
   </>
 );
 

@@ -1,4 +1,4 @@
-const Divider = ({
+export const Divider = ({
   label,
 }: { label: string }) => (
   <div className="divider-line-container">

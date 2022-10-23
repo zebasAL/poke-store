@@ -3,7 +3,7 @@
    * @param {string} stat
    * @returns {number}
    */
-const maxStat = (pokemonStat: any) => {
+export const maxStat = (pokemonStat: any) => {
   const statName = pokemonStat.stat.name;
   const value = pokemonStat.base_stat;
 
@@ -15,5 +15,3 @@ const maxStat = (pokemonStat: any) => {
   if (statName === 'speed') return ((value * 100) / 180).toFixed();
   return "0";
 };
-
-export default maxStat;

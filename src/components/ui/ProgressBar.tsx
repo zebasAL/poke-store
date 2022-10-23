@@ -1,12 +1,12 @@
 import { FC } from 'react';
 
-interface ProgressBar {
+type ProgressBar = {
   percentage: string;
   progressValue: string;
   label: number;
 }
 
-const ProgressBar: FC<ProgressBar> = ({
+export const ProgressBar: FC<ProgressBar> = ({
   percentage,
   progressValue,
   label,

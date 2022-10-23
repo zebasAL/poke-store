@@ -1,26 +1,49 @@
-import React, { KeyboardEvent, type FC, ReactElement } from 'react';
+import { useState, KeyboardEvent, type FC, ReactElement, useEffect, useRef, SyntheticEvent, LegacyRef, SetStateAction } from 'react';
+import { PokeItem } from "../../models"
+import { List } from "./List";
 
-interface Props {
-  searchValue: string;
-  setSearchValue: (param: string) => void;
-  handleEnter: (param: KeyboardEvent) => void;
+type Props = {
+  values: Array<PokeItem>;
+  handleClick: (param: string) => void;
 }
 
-const AutoCompleteField: FC<Props> = ({
-  searchValue,
-  setSearchValue,
-  handleEnter,
-}): ReactElement => (
-  <div className="input-container">
-    <input
-      className="autocomplete-input-field"
-      type="text"
-      placeholder="Search"
-      value={searchValue}
-      onChange={(e) => setSearchValue(e.target.value)}
-      onKeyDown={(e) => ((e.key === 'Enter') && handleEnter(e))}
-    />
-  </div>
-);
+export const AutoCompleteField: FC<Props> = ({
+  handleClick,
+  values,
+}): ReactElement => {
+  const [inputValue, setInputValue] = useState<string>("");
+  const [results, setResults] = useState<Props["values"]>([]);
 
-export default AutoCompleteField;
+  useEffect(() => {
+    if (!inputValue && !results.length) return;
+    if (!inputValue && results.length) return setResults([]);
+
+    const listValues = values.filter((value) => value.name.includes(inputValue.toLocaleLowerCase()))
+    if (listValues.length > 0) {
+      setResults(listValues);
+    } else {
+      setResults([{ name: "Pokemon not found", url: "" }]);
+    }
+
+  }, [inputValue]);
+
+  return (
+    <>
+      <div className="input-container">
+        <input
+          className="autocomplete-input-field"
+          type="text"
+          placeholder="Search"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+        />
+      </div>
+      <List
+        handleClick={(value: string) => handleClick(value)}
+        setResults={(value: SetStateAction<Array<PokeItem>>) => setResults(value)}
+        results={results}
+      />
+    </>
+  );
+};
+
