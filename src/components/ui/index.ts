@@ -8,3 +8,4 @@ export * from "./ProgressBar";
 export * from "./QuantityBar";
 export * from "./Loader";
 export * from "./Cart";
+export * from "./CurrencyList";

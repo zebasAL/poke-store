@@ -4,33 +4,27 @@ import { Button, Icon, UserIcon, ShoppingCartIcon, Pill } from "evergreen-ui";
 import { connect } from 'react-redux';
 import { MapState , MapDispatch, ReduxActions, ReduxState } from '../../models';
 import { default as Cart } from '../ui/Cart';
-import FlipSwitch from '../ui/FlipSwitch';
+import { FlipSwitch, CurrencyList } from '../';
 import logo from '../../assets/logo.svg';
 
 type States = {
   isShiny: ReduxState["isShiny"];
   cart: ReduxState["cart"];
 };
-
 type Actions = {
   setIsShiny: ReduxActions["setIsShiny"]
 };
-
 const mapStateToProps: MapState<States> = (state) => ({
   isShiny: state.isShiny,
   cart: state.cart,
 });
-
 const mapDispatchToProps: MapDispatch<Actions> = (dispatch) => ({
   setIsShiny: (values) => dispatch({
     type: 'SET_IS_SHINY',
     payload: values,
   }),
 });
-
-type StateProps = ReturnType<typeof mapStateToProps>
-type DispatchProps = ReturnType<typeof mapDispatchToProps>
-type Props = StateProps & DispatchProps;
+type Props = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>;
 
 const Navbar: FC<Props> = ({
   cart,
@@ -50,6 +44,7 @@ const Navbar: FC<Props> = ({
             alt="logo"
           />
         </Link>
+        <CurrencyList />
         <Button id="transparent-button" type="button" background="transparent" border="none" onClick={() => setShowCart(!showCart)}>
           <Icon id="user-login-label" color="#a7a8b7" icon={UserIcon} size={25} />
         </Button>
@@ -66,7 +61,7 @@ const Navbar: FC<Props> = ({
           </Pill>
         </Button>
       </div>
-      {showCart && (<Cart cart={cart} isCartOpen={showCart} setIsCartOpen={setShowCart} />)}
+      {showCart && (<Cart isCartOpen={showCart} setIsCartOpen={setShowCart} />)}
     </nav>
   );
 };

@@ -1,4 +1,4 @@
-const FlipSwitch = ({
+export const FlipSwitch = ({
   isOn,
   setIsOff,
 }: { isOn: boolean, setIsOff: (params: boolean) => void }) => (
@@ -22,5 +22,3 @@ const FlipSwitch = ({
     </div>
   </>
 );
-
-export default FlipSwitch;

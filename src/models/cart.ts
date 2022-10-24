@@ -3,8 +3,9 @@ import { z } from "zod";
 const productSchema = z
   .object({
     id: z.number().positive(),
+    productId: z.number().positive(),
     quantity: z.number().positive(),
-    image: z.string().startsWith("https"),
+    image: z.string(),
     title: z.string(),
     price: z.number().positive(),
   })
@@ -20,4 +21,4 @@ const cartSchema = z
   .strict();
 
 export type ProductCart = z.infer<typeof productSchema>;
-export type Cart = z.infer<typeof cartSchema>;
+export type Cart = z.infer<typeof cartSchema> | null;
