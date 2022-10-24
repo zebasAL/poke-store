@@ -1,102 +1,68 @@
 import { useState, type FC, ReactElement } from 'react';
-import axios from 'axios';
 import {
-  SideSheet, Heading, Pane, Button, Icon, ShoppingCartIcon, Spinner, toaster, Pill,
+  SideSheet, Heading, Pane, Button,
 } from 'evergreen-ui';
-import { connect, ConnectedComponent } from 'react-redux';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { MapDispatch, ReduxActions, ReduxState, Dispatch } from '../../models';
+import { MapState, MapDispatch, ReduxActions, ReduxState } from '../../models';
 import { QuantityBar } from "./";
 
 type CartUser = {
-  cart: ReduxState["cart"];
   isCartOpen: boolean;
   setIsCartOpen: (value: boolean) => void;
 }
-
+type State = {
+  cart: ReduxState["cart"];
+  currency: ReduxState["currency"];
+}
 type Actions = {
   setCart: ReduxActions["setCart"];
 };
-
+const mapStateToProps: MapState<State> = (state) => ({
+  cart: state.cart,
+  currency: state.currency,
+});
 const mapDispatchToProps: MapDispatch<Actions> = (dispatch) => ({
   setCart: (values) => dispatch({
     type: 'SET_CART',
     payload: values,
   }),
 });
-
-type DispatchProps = ReturnType<typeof mapDispatchToProps>
-type Props = DispatchProps & CartUser;
+type Props = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps> & CartUser;
 
 const Cart: FC<Props> = ({
   isCartOpen,
   setIsCartOpen,
   cart,
   setCart,
+  currency,
 }): ReactElement => {
-  const [disabled, setDisabled] = useState<boolean>(false);
 
   /**
-   * handleUpdateQuantity
-   * @param {number} cartIndex
-   * @param {number} productIndex
-   * @param {string} value
+   * Update quantity of the selected product
+   * 
+   * @param {number} quantity the new amount that will replace the old
+   * @param {number} id product cart id
    */
-  const handleUpdateQuantity = (productIndex: number, value: number) => {
-    const {...updatedCarts} = cart;
-    updatedCarts.products[productIndex].quantity = value;
-    setCart(updatedCarts);
+  const handleUpdateQuantity = (quantity: number, id: number) => {
+    if (!cart) return;
+    const products = [...cart.products].map((product) => (product.id !== id) ? product : { ...product, quantity });
+    setCart({ ...cart, products });
   };
 
   /**
-   * removeProductCart
+   * Removes product from cart
+   * 
    * @param {number} cartIndex
-   * @param {number} productId
-   * @returns {void}
    */
-  const removeProductCart = (productId: number) => {
-    setDisabled(true);
-
-    // let updatedListOfCarts = [...cart];
-    // if (updatedListOfCarts[cartIndex].products.length === 1) {
-    //   // delete the whole cart
-    //   axios.delete(`https://fakestoreapi.com/cart/${updatedListOfCarts[cartIndex].id}`)
-    //     .then((response) => {
-    //       toaster.success('Cart deleted');
-    //       updatedListOfCarts = updatedListOfCarts.filter((cart, index) => index !== cartIndex);
-    //       setCart(updatedListOfCarts);
-    //       setDisabled(false);
-    //     })
-    //     .catch(() => {
-    //       toaster.warning('Something went wrong, Try again');
-    //       setDisabled(false);
-    //     });
-    // } else {
-    //   // delete just one product
-    //   updatedListOfCarts.forEach((cart, index) => {
-    //     if (cartIndex === index) {
-    //       cart.products = cart.products.filter((product) => product.data.id !== productId);
-    //     }
-    //   });
-
-    //   const updatedCart = {
-    //     ...updatedListOfCarts[cartIndex],
-    //     products: updatedListOfCarts[cartIndex].products.map((prod) => ({
-    //       productId: prod.productId,
-    //       quantity: prod.quantity,
-    //     })),
-    //   };
-
-    //   axios.put(`https://fakestoreapi.com/cart/${updatedCart.id}`, updatedCart)
-    //     .then((response) => {
-    //       toaster.success('Product deleted');
-    //       setCart(updatedListOfCarts);
-    //       setDisabled(false);
-    //     })
-    //     .catch(() => {
-    //       toaster.warning('Something went wrong, try again');
-    //     });
-    // }
+  const removeProductCart = (id: number) => {
+    if (!cart) return;
+    const products = [...cart.products].filter((product) => (product.id !== id));
+    if (products.length) {
+      setCart({ ...cart, products });
+    } else {
+      setCart(null);
+    }
   };
 
   return (
@@ -121,55 +87,48 @@ const Cart: FC<Props> = ({
       </div>
       : (
       <Pane flex="1" overflowY="scroll" background="tint1" padding={16}>
-        <>
-            <div className="cart-products-container">
-              <div className="cart-products-title">
-                <p>{`Cart`}</p>
-                <p>{`Created: ${new Date().toDateString()}`}</p>
-                {/* <p>{`Created: ${moment().format('MMM Do YY')}`}</p> */}
-              </div>
+        <div className="cart-products-container">
+          <div className="cart-products-title" style={{ alignItems: "baseline" }}>
+            <p>{`Account Founds:`}</p>
+            <Button is={Link} to="" boxShadow="box-shadow: 0 0 0 2px #d6e0ff">ADD FOUNDS</Button>
+          </div>
+          <div className="cart-products-title">
+            <p>{`Products:`}</p>
+            <p>{`Created: ${new Date(cart.date).toLocaleDateString()}`}</p>
+          </div>
 
-              {cart.products.map((product, productIndex) => (
-                <div className="cart-products-wrapper" key={`cart-product-${product.id}`}>
-                  <Link to={`/${product.id}`}>
-                    <img alt="CartProduct" src={product.image} data-cy={`product-cart-image-${product?.id}`} />
-                  </Link>
+          {cart.products.map((product) => (
+            <div className="cart-products-wrapper" key={product.id}>
+              <Link to={`/${product.id}`}>
+                <img alt="CartProduct" src={product.image} data-cy={`product-cart-image-${product?.id}`} />
+              </Link>
 
-                  <div className="cart-products-content" data-cy={`product-cart-title-${product?.id}`}>
-                    <p>{product.title}</p>
-                    <div className="cart-products-pricing">
-                      <div className="quantity-container">
-                        <p>{'Quantity: '}</p>
-                        <QuantityBar
-                          label="Quantity:"
-                          quantity={product.quantity}
-                        />
-                      </div>
-                      <p>{`Price: $ ${product.price}`}</p>
-                    </div>
-                    <p>{`Total: $ ${(product.price * product.quantity).toFixed(2)}`}</p>
-                    <Button
-                      data-cy={`delete-button-${product.id}`}
-                      disabled={disabled}
-                      onClick={() => {
-                        removeProductCart(product.id);
-                      }}
-                    >
-                      Delete
-                    </Button>
+              <div className="cart-products-content" data-cy={`product-cart-title-${product?.id}`}>
+                <p>{product.title}</p>
+                <div className="cart-products-pricing">
+                  <div className="quantity-container">
+                    <QuantityBar
+                      label="Quantity:"
+                      quantity={product.quantity}
+                      setQuantity={(quantity) => handleUpdateQuantity(quantity, product.id)}
+                    />
                   </div>
+                  <p>{`Price: ${currency.symbol + " " + ((product?.price ?? 1) * currency.quote).toFixed(2)}`}</p>
                 </div>
-              ))}
-
-              <div className="payment-button">
-                <Button className="buy-products-cart-button" appearance="primary" marginTop={10}>Proceed with the payment</Button>
+                <p>{`Total: ${currency.symbol + " " + (product.price * product.quantity * currency.quote).toFixed(2)}`}</p>
+                <Button onClick={() => removeProductCart(product.id)}>Delete</Button>
               </div>
             </div>
-        </>
+          ))}
+
+          <div className="payment-button">
+            <Button appearance="primary" intent="danger" marginTop={10}>Proceed to payment</Button>
+          </div>
+        </div>
       </Pane>            
       )}
     </SideSheet>
   );
 };
 
-export default connect<null, DispatchProps>(null, mapDispatchToProps)(Cart);
+export default connect(mapStateToProps, mapDispatchToProps)(Cart);

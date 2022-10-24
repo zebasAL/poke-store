@@ -3,16 +3,16 @@ import { Button, TextInput } from 'evergreen-ui';
 
 export const QuantityBar = ({
   quantity,
+  setQuantity,
   label,
-}: { quantity?: number, label?: string }) => {
-  const [value, setValue] = useState<number>(quantity ?? 1);
+}: { quantity: number, label?: string, setQuantity: (value: number) => void }) => {
 
   const handleQuantity = {
     increment: () => {
-      setValue((prevCount) => prevCount + 1);
+      setQuantity(quantity + 1);
     },
     decrement: () => {
-      if (value >= 2) setValue((prevCount) => prevCount - 1);
+      if (quantity >= 2) setQuantity(quantity - 1);
     },
   };
 
@@ -23,9 +23,9 @@ export const QuantityBar = ({
         <Button onClick={handleQuantity.decrement} borderRadius="0" borderRight="none">-</Button>
         <TextInput
           type="number"
-          value={value}
-          required
+          value={quantity}
           onChange={() => {}}
+          required
           borderRadius="1"
           borderLeft="none"
           borderRight="none"

@@ -1,14 +1,4 @@
-import { Cart, UserFounds } from "./";
-
-// from https://stackoverflow.com/a/71476167/10873797
-type CUnion<T extends Record<PropertyKey, unknown>>
-  = { [K in keyof T]: { [_ in K]: T[K] } & { [_ in Exclude<keyof T, K>]?: undefined } }[keyof T];
-
-type RequireAtLeastOne<T, Keys extends keyof T = keyof T> =
-Pick<T, Exclude<keyof T, Keys>> 
-& {
-    [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>
-}[Keys]
+import { Cart, UserFounds, FormatedCurrency, CUnion } from "./";
 
 export type RootReducer = {
   state: ReduxState;
@@ -19,12 +9,14 @@ export type ReduxState = {
   isShiny: boolean;
   cart: Cart | null;
   userFounds: UserFounds | null;
+  currency: FormatedCurrency;
 };
 
 export type ReduxActions = {
-  setIsShiny: (params: boolean) => void;
+  setIsShiny: (params: boolean) => (fun: Dispatch) => void;
   setCart: (params: Cart) => (fun: Dispatch) => void;
-  setUserFounds: (params: UserFounds) => void;
+  setUserFounds: (params: UserFounds) => (fun: Dispatch) => void;
+  setCurrency: (params: FormatedCurrency) => (fun: Dispatch) => void;
 };
 
 export type MapState<States> = (state: ReduxState) => States;

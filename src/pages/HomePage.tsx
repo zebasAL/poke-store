@@ -8,17 +8,18 @@ import { AutoCompleteField, PokemonCard } from "../components";
 import { images } from "../url";
 
 type HomePage = {
-  isShiny: ReduxState["isShiny"];
+  isShiny: ReduxState["isShiny"],
+  currency: ReduxState["currency"],
 }
-
 const mapStateToProps: MapState<HomePage> = (state) => ({
     isShiny: state.isShiny,
+    currency: state.currency,
 });
-
-type Props = HomePage;
+type Props = ReturnType<typeof mapStateToProps>;
 
 const HomePage: FC<Props> = ({
   isShiny,
+  currency,
 }): ReactElement => {
   const [showScrollToTopBtn, setShowScrollToTopBtn] = useState<boolean>(false);
   const {
@@ -28,7 +29,7 @@ const HomePage: FC<Props> = ({
     hasMore,
     limitPokemons: limit,
     handleOffset,
-    toast,
+    toaster,
 } = useFectchPokemons();
   const navigate = useNavigate();
   const skeletonBoxes = new Array(limit).fill("");
@@ -39,7 +40,9 @@ const HomePage: FC<Props> = ({
     if (typeof id[0] === "number") {
       navigate(`/${id[0]}`);
     } else {
-      toast.warn("it was impossible to get close to the pokemon")
+      toaster.warning("it was impossible to get close to the pokemon", {
+        id: "forbidden-action",
+      });
     }
   };
 
@@ -53,7 +56,6 @@ const HomePage: FC<Props> = ({
   const countNuberOfPokemons = useCallback((total: number, callback: () => void) => {
     return () => {
       noOfCalls = noOfCalls + 1;
-      console.log("noOfCalls: ", noOfCalls);
       if (total === noOfCalls) {
         callback();
       }
@@ -71,7 +73,7 @@ const HomePage: FC<Props> = ({
   });
 
   const observer = useRef<any>(null);
-  const listInnerRef = useCallback((node: HTMLImageElement) => {
+  const lastElementRef = useCallback((node: HTMLImageElement) => {
     if (isLoading) return;
     if (observer.current) observer.current?.disconnect();
     observer.current = new IntersectionObserver((entries) => {
@@ -112,7 +114,10 @@ const HomePage: FC<Props> = ({
                 <div className="pokemon-details">
                   <Link to={`/${pokemon.id}`}>
                     <img
-                      ref={listInnerRef}
+                      // loading="lazy"
+                      // width="200px"
+                      // height="200px"
+                      ref={lastElementRef}
                       alt="pokemon"
                       src={isShiny === true 
                         ? (pokemon.sprites?.front_shiny ?? images.unhandledImage)
@@ -126,14 +131,14 @@ const HomePage: FC<Props> = ({
                       <p id="pokemon-card-height">{`Height :${pokemon.height / 10}m`}</p>
                       <p id="pokemon-card-weight">{`Weight :${(pokemon.weight * 0.1).toFixed()}kg`}</p>
                       <p id="pokemon-card-price">{`Price: $${(pokemon.height * 0.1).toFixed()}`}</p>
-                      <p id="pokemon-card-price">{`Price: $${pokemon?.price ?? 1}`}</p>
+                      <p id="pokemon-card-price">{`Price: ${currency.symbol + " " + ((pokemon?.price ?? 1) * currency.quote).toFixed(2)}`}</p>
                     </div>
                   </Link>
                 </div>
               </div>
             )
           } else {
-            return (<PokemonCard styles={{ opacity: "0" }} key={index} pokemon={pokemon} onLoad={onLoad} isShiny={isShiny} />)
+            return (<PokemonCard currency={currency} styles={{ opacity: "0" }} key={index} pokemon={pokemon} onLoad={onLoad} isShiny={isShiny} />)
           }
         })}
         {isLoading && skeletonBoxes.map((skeleton, index) => <div key={index} className="pokemons-wrapper skeleton-loader" />)}

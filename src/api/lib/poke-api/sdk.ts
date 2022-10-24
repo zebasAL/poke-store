@@ -1,14 +1,15 @@
 import type { AxiosError, AxiosRequestConfig } from "axios";
 import axios, { AxiosInstance } from "axios";
 import z from "zod";
-import { PokeItem, Pokemon, PokemonSpecie } from "./schemas";
-import { pokeItemSchema, pokemonSchema, pokemonSpecieSchema } from "./schemas";
+import { PokeItem, Pokemon, PokemonSpecie } from "./";
+import { pokeItemSchema, pokemonSchema, pokemonSpecieSchema } from "./";
+const env_var = import.meta.env
 
 class PokeApi {
   private static instance: PokeApi;
   private req: AxiosInstance;
   private readonly baseConfig: AxiosRequestConfig = {
-    baseURL: "https://pokeapi.co/api/v2",
+    baseURL: env_var.VITE_POKE_API_URL,
     headers: {
       Accept: "application/json",
       Authorization: "",
@@ -35,11 +36,11 @@ class PokeApi {
     data: Data,
   ): Data {
     try {
-      schema.parse(data);
+      schema.parse(data); 
     } catch (error: unknown) {
-      if (!(error instanceof z.ZodError) && process.env.VERCEL_ENV !== "production") {
-        // throw error;
+      if (!(error instanceof z.ZodError) && env_var.VITE_VERCEL_ENV !== "production") {
         console.warn("An schema must be correted", error);
+        throw error;
       }
     }
     return data;

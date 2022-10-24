@@ -3,7 +3,7 @@ import { pokeItemSchema, imageUrlSchema, pokemonAbilitySchema, pokemonStatsSchem
 
 export const pokemonSchema = z
   .object({
-    price: z.number().positive().optional(),
+    price: z.number().positive(),
     abilities: z.array(pokemonAbilitySchema),
     base_experience: z.number().positive(),
     /**

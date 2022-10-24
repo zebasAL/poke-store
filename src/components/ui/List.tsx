@@ -8,7 +8,7 @@ type List = {
 }
 
 export const List: FC<List> = ({ setResults, results, handleClick }) => {
-  const autoCompleteRef = useRef<Ref<HTMLUListElement> | any>(null);
+  const autoCompleteRef = useRef<HTMLUListElement | null>(null);
 
   useEffect(() => {
     if (!autoCompleteRef) return;
