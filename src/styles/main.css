@@ -58,9 +58,6 @@ nav.navbar {
 }
 
 .switch-background{
-  position: absolute;
-  left: 0;
-  top: 10px;
   margin-left: 23px;
   box-shadow: 0px 2px 3px rgb(0 0 0 / 24%);
   width: 60px;
@@ -272,6 +269,7 @@ nav.navbar {
 }
 .cart-products-wrapper {
   display: flex;
+  justify-content: space-evenly;
   border: 1px solid #8080804d;
   padding: 10px;
   margin-bottom: 10px;
@@ -376,6 +374,12 @@ div.hidden {
   display: flex;
   flex-flow: wrap;
   padding: 0;
+  margin: 0;
+  background: none;
+}
+
+.pokemons-cards-container .pokemon-details p {
+  margin: 0 5px 10px 5px;
 }
 
 .pokemons-cards-container .pokemons-wrapper {
@@ -509,7 +513,6 @@ p#pokemon-card-name {
   box-shadow: 0px 2px 3px rgb(0 0 0 / 24%);
   background: #fdfdfd;
   padding: 20px;
-  margin-top: 20px;
 }
 
 .pokemon-card-wrapper .pokemon-details {
@@ -638,13 +641,13 @@ input::-webkit-inner-spin-button {
   border: none !important;
 }
 
-#transparent-button:hover,
-#transparent-button:active  {
+#cart-display-button:hover,
+#cart-display-button:active  {
   border: none;
   background: transparent;
 }
 
-#transparent-button:focus {
+#cart-display-button:focus {
   box-shadow: none;
 }
 
@@ -690,3 +693,7 @@ input::-webkit-inner-spin-button {
   justify-content: center;
 }
 
+.flex-center {
+  display: flex;
+  align-items: center;
+}

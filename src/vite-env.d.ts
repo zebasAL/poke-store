@@ -7,6 +7,7 @@
     readonly VITE_CURRENCY_API_KEY: string;
     readonly VITE_CURRENCY_API_URL: string;
     readonly VITE_POKE_API_URL: string;
+    readonly VITE_BUGSNAG_API_KEY: string;
   }
   
   interface ImportMeta {

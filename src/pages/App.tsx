@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import { Route, BrowserRouter, Routes } from "react-router-dom";
-// import { SideBar } from "../components/navigation/SideBar";
+import { ErrorBoundary } from "../components";
 import '../styles/main.css'
 import '../styles/mobile.css'
 
@@ -11,15 +11,14 @@ const PokemonDetailsView = lazy(() => import('./PokemonPage'));
 
 const App = () => {
   return (
-    <>
-        <Navbar />
-        {/* <SideBar /> */}
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/:id" element={<PokemonDetailsView />} />
-          <Route path="*" element={<ViteWelcome />} />
-        </Routes>
-    </>
+    <ErrorBoundary>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/:id" element={<PokemonDetailsView />} />
+        <Route path="*" element={<ViteWelcome />} />
+      </Routes>
+    </ ErrorBoundary>
   )
 }
 

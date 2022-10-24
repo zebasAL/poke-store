@@ -14,10 +14,10 @@ export const PokemonServices = {
     },
     getPokemonsByOffset: async (limit: number, offset: number, cancelToken?: Cancel) => await pokeApi.getPokemons(limit, offset, cancelToken),
     getPokemonSpecie: async (id: number | string, cancelToken?: Cancel) => await pokeApi.getPokemonSpecie(id, cancelToken),
-    getPokemonFullData: async (id: number) => {
+    getPokemonFullData: async (id: number, cancelToken?: Cancel) => {
         const response = await Promise.allSettled([
-            PokemonServices.getPokemon(id),
-            PokemonServices.getPokemonSpecie(id),
+            PokemonServices.getPokemon(id , cancelToken),
+            PokemonServices.getPokemonSpecie(id, cancelToken),
         ]);
         const [pokemon, specie] = getFulfilledData(response)
         return {
