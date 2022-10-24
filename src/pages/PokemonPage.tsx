@@ -39,6 +39,7 @@ const PokemonDetailsView: FC<Props> = ({
   const handleAddNewProduct = () => {
     if (!pokemon) return;
     if (cart === null) {
+      // create a new cart with selected product
       setCart({
         date: new Date().toISOString(),
         id: 1,
@@ -54,26 +55,55 @@ const PokemonDetailsView: FC<Props> = ({
           }]
       });
     } else {
-      setCart({
-        date: cart.date,
-        id: cart.id,
-        userId: cart.userId,
-        products: [
-        ...cart.products,
-        {
-          // Assigns an available id, always seeking the lowest number
-          id: cart.products.sort((a, b) => a.id - b.id).reduce((prev, current) => prev === current.id ? prev + 1 : prev, 1),
-          productId: pokemon.id,
-          quantity,
-          image: pokemon.sprites?.front_default ?? "",
-          title: pokemon.name,
-          price: pokemon.price * quantity,
-        }],
-      });
+      // if that pokemon is already in cart, update product quantity
+      const existingProduct = cart.products.find((product) => product.productId === pokemon.id);
+      if (existingProduct?.productId) {
+        const products = cart.products.map((product) => {
+          if (existingProduct?.productId === product.productId) {
+            return {
+              ...product,
+              quantity,
+            };
+          }
+          return product;
+        })
+        setCart({
+          date: cart.date,
+          id: cart.id,
+          userId: cart.userId,
+          products,
+        });
+        return toaster.success("pokemon updated successfully", {
+          id: "forbidden-action",
+        });
+      } else {
+        setCart({
+          date: cart.date,
+          id: cart.id,
+          userId: cart.userId,
+          products: [
+          ...cart.products,
+          {
+            // Assigns an available id, always seeking the lowest number
+            id: cart.products.sort((a, b) => a.id - b.id).reduce((prev, current) => prev === current.id ? prev + 1 : prev, 1),
+            productId: pokemon.id,
+            quantity,
+            image: pokemon.sprites?.front_default ?? "",
+            title: pokemon.name,
+            price: pokemon.price * quantity,
+          }],
+        });
+      };
     }
     toaster.success("The pokemon was added to your pokedex", {
       id: "forbidden-action",
     });
+  };
+
+  const handleBuyProduct = () => {
+    handleAddNewProduct();
+    const cartBtn = document.getElementById("cart-display-button");
+    cartBtn?.click();
   };
 
   if (error) return (<UnkownPokemon/>);
@@ -100,7 +130,7 @@ const PokemonDetailsView: FC<Props> = ({
               <QuantityBar label="Quantity:" quantity={quantity} setQuantity={setQuantity} />
               <div className="product-view-add-and-buy-btns">
                 <Button appearance="secondary" onClick={handleAddNewProduct}>Add to cart</Button>
-                <Button appearance="primary" intent="danger">Buy it now</Button>
+                <Button appearance="primary" intent="danger" onClick={handleBuyProduct}>Buy it now</Button>
               </div>
             </div>
           </div>

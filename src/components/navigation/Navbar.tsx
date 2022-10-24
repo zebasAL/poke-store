@@ -1,10 +1,11 @@
 import { useState, type FC, ReactElement } from "react";
-import { Link } from 'react-router-dom';
-import { Button, Icon, UserIcon, ShoppingCartIcon, Pill } from "evergreen-ui";
+import { useNavigate, Link } from 'react-router-dom';
+import { Button, Icon, ShoppingCartIcon, Pill, toaster } from "evergreen-ui";
 import { connect } from 'react-redux';
 import { MapState , MapDispatch, ReduxActions, ReduxState } from '../../models';
-import { default as Cart } from '../ui/Cart';
+import { Cart, AutoCompleteField } from '../';
 import { FlipSwitch, CurrencyList } from '../';
+import { usePokemonsName } from "../../hooks";
 import logo from '../../assets/logo.svg';
 
 type States = {
@@ -32,6 +33,25 @@ const Navbar: FC<Props> = ({
   setIsShiny,
 }): ReactElement => {
   const [showCart, setShowCart] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const {
+    allPokemonsName,
+} = usePokemonsName();
+
+  /**
+   * Redirects to selected options
+   * @param url endpoint to get pokemon data
+   */
+  const handleClick = (url: string) => {
+    const id = url.split("/").map((item) => Number(item)).filter((item) => item);
+    if (typeof id[0] === "number") {
+      navigate(`/${id[0]}`);
+    } else {
+      toaster.warning("it was impossible to get close to the pokemon", {
+        id: "forbidden-action",
+      });
+    }
+  };
 
   return (
     <nav id="nav">
@@ -44,23 +64,27 @@ const Navbar: FC<Props> = ({
             alt="logo"
           />
         </Link>
-        <CurrencyList />
-        <Button id="transparent-button" type="button" background="transparent" border="none" onClick={() => setShowCart(!showCart)}>
-          <Icon id="user-login-label" color="#a7a8b7" icon={UserIcon} size={25} />
-        </Button>
-        <Button
-          position="relative"
-          id="transparent-button"
-          onClick={() => setShowCart(!showCart)}
-          background="transparent"
-          border="none"
-        >
-          <Icon className="transparent-button" color="#a7a8b7"  icon={ShoppingCartIcon} padding={0} size={25} />
-          <Pill data-cy="cart-products-number" marginY="10px" paddingX={4} display="block">
-            {cart?.products.length ?? 0}
-          </Pill>
-        </Button>
+        <div className="flex-center">
+          <CurrencyList />
+          <Button
+            position="relative"
+            className="transparent-button"
+            id="cart-display-button"
+            onClick={() => setShowCart(!showCart)}
+            background="transparent"
+            border="none"
+          >
+            <Icon className="transparent-button" color="#a7a8b7"  icon={ShoppingCartIcon} padding={0} size={25} />
+            <Pill data-cy="cart-products-number" marginY="10px" paddingX={4} display="block">
+              {cart?.products.length ?? 0}
+            </Pill>
+          </Button>
+        </div>
       </div>
+      <AutoCompleteField
+        handleClick={(value: string) => handleClick(value)}
+        values={allPokemonsName}
+      />
       {showCart && (<Cart isCartOpen={showCart} setIsCartOpen={setShowCart} />)}
     </nav>
   );

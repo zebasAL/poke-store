@@ -1,4 +1,4 @@
-import { useState, KeyboardEvent, type FC, ReactElement, useEffect, useRef, SyntheticEvent, LegacyRef, SetStateAction } from 'react';
+import { useState, type FC, ReactElement, useEffect, SetStateAction } from 'react';
 import { PokeItem } from "../../models"
 import { List } from "./List";
 

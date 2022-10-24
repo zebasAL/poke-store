@@ -1,4 +1,4 @@
-import { Cart, UserFounds, FormatedCurrency, CUnion } from "./";
+import { Cart, UserFunds, FormatedCurrency, CUnion } from "./";
 
 export type RootReducer = {
   state: ReduxState;
@@ -8,14 +8,14 @@ export type RootReducer = {
 export type ReduxState = {
   isShiny: boolean;
   cart: Cart | null;
-  userFounds: UserFounds | null;
+  userFunds: UserFunds;
   currency: FormatedCurrency;
 };
 
 export type ReduxActions = {
   setIsShiny: (params: boolean) => (fun: Dispatch) => void;
   setCart: (params: Cart) => (fun: Dispatch) => void;
-  setUserFounds: (params: UserFounds) => (fun: Dispatch) => void;
+  setUserFunds: (params: UserFunds) => (fun: Dispatch) => void;
   setCurrency: (params: FormatedCurrency) => (fun: Dispatch) => void;
 };
 

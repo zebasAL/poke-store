@@ -1,10 +1,10 @@
 import { useRef, useCallback, useState, useEffect, type FC, ReactElement } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { Icon, ArrowUpIcon } from "evergreen-ui";
 import { ReduxState, MapState } from "../models";
 import { useFectchPokemons } from "../hooks";
-import { AutoCompleteField, PokemonCard } from "../components";
+import { PokemonCard, Loader } from "../components";
 import { images } from "../url";
 
 type HomePage = {
@@ -23,28 +23,13 @@ const HomePage: FC<Props> = ({
 }): ReactElement => {
   const [showScrollToTopBtn, setShowScrollToTopBtn] = useState<boolean>(false);
   const {
-    allPokemonsName,
     pokemons,
     isLoading,
     hasMore,
     limitPokemons: limit,
     handleOffset,
-    toaster,
 } = useFectchPokemons();
-  const navigate = useNavigate();
-  const skeletonBoxes = new Array(limit).fill("");
   let noOfCalls = 0;
-
-  const handleClick = (url: string) => {
-    const id = url.split("/").map((item) => Number(item)).filter((item) => item);
-    if (typeof id[0] === "number") {
-      navigate(`/${id[0]}`);
-    } else {
-      toaster.warning("it was impossible to get close to the pokemon", {
-        id: "forbidden-action",
-      });
-    }
-  };
 
   /**
    * When total matches with number of calls, displays all images that already were rendered by browser.
@@ -102,10 +87,6 @@ const HomePage: FC<Props> = ({
 
   return (
     <div className="cards-display details-off">
-      <AutoCompleteField
-        handleClick={(value: string) => handleClick(value)}
-        values={allPokemonsName}
-      />
       <ul className="pokemons-cards-container">
         {pokemons.length > 0 && pokemons.map((pokemon, index) => {
           if (pokemons.length === index + 1) {
@@ -114,9 +95,6 @@ const HomePage: FC<Props> = ({
                 <div className="pokemon-details">
                   <Link to={`/${pokemon.id}`}>
                     <img
-                      // loading="lazy"
-                      // width="200px"
-                      // height="200px"
                       ref={lastElementRef}
                       alt="pokemon"
                       src={isShiny === true 
@@ -141,8 +119,8 @@ const HomePage: FC<Props> = ({
             return (<PokemonCard currency={currency} styles={{ opacity: "0" }} key={index} pokemon={pokemon} onLoad={onLoad} isShiny={isShiny} />)
           }
         })}
-        {isLoading && skeletonBoxes.map((skeleton, index) => <div key={index} className="pokemons-wrapper skeleton-loader" />)}
       </ul>
+      {isLoading && (<Loader height={200} />)}
       {showScrollToTopBtn && (
       <button
         onClick={() => {

@@ -1,42 +1,68 @@
-import { useState, type FC, ReactElement } from 'react';
+import type { FC, ReactElement } from "react";
 import {
   SideSheet, Heading, Pane, Button,
-} from 'evergreen-ui';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { MapState, MapDispatch, ReduxActions, ReduxState } from '../../models';
+} from "evergreen-ui";
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+import { toaster } from "evergreen-ui"
+import { MapState, MapDispatch, ReduxActions, ReduxState } from "../../models";
 import { QuantityBar } from "./";
+import { newFunds } from "../../helpers";
 
-type CartUser = {
+type UserCart = {
   isCartOpen: boolean;
   setIsCartOpen: (value: boolean) => void;
 }
 type State = {
   cart: ReduxState["cart"];
   currency: ReduxState["currency"];
+  userFunds: ReduxState["userFunds"];
 }
 type Actions = {
   setCart: ReduxActions["setCart"];
+  setUserFunds: ReduxActions["setUserFunds"];
 };
 const mapStateToProps: MapState<State> = (state) => ({
   cart: state.cart,
   currency: state.currency,
+  userFunds: state.userFunds,
 });
 const mapDispatchToProps: MapDispatch<Actions> = (dispatch) => ({
   setCart: (values) => dispatch({
-    type: 'SET_CART',
+    type: "SET_CART",
+    payload: values,
+  }),
+  setUserFunds: (values) => dispatch({
+    type: "SET_USER_FUNDS",
     payload: values,
   }),
 });
-type Props = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps> & CartUser;
+type Props = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps> & UserCart;
 
-const Cart: FC<Props> = ({
+const UserCart: FC<Props> = ({
   isCartOpen,
-  setIsCartOpen,
   cart,
-  setCart,
   currency,
+  userFunds,
+  setIsCartOpen,
+  setCart,
+  setUserFunds,
 }): ReactElement => {
+  const subTotal = Number((cart?.products.reduce((prev, product) => prev + (product.price * product.quantity * currency.quote), 0) ?? 0.00)?.toFixed(2));
+  const taxes = Number((subTotal * .16 * currency.quote).toFixed(2));
+  const totalPayment = Number((subTotal + taxes).toFixed(2));
+  const remainingFunds = Number(((userFunds.funds * currency.quote) - totalPayment).toFixed(2));
+
+  /**
+   * Adds from 5 to 15 dollars to existing account funds
+   */
+  const handleAddFunds = () => {
+    setUserFunds({
+      ...userFunds,
+      funds: Number(((userFunds?.funds ?? 0) + newFunds).toFixed(2)),
+      updatedAt: new Date().toISOString(),
+    })
+  };
 
   /**
    * Update quantity of the selected product
@@ -65,14 +91,30 @@ const Cart: FC<Props> = ({
     }
   };
 
+  /**
+   * Handles payment
+   */
+  const handlePayment = () => {
+    setUserFunds({
+      ...userFunds,
+      funds: remainingFunds,
+      updatedAt: new Date().toISOString(),
+    });
+    setCart(null);
+    toaster.success("successful purchase", {
+      description: "Come back soon",
+      id: "forbidden-action",
+    })
+  };
+
   return (
     <SideSheet
       isShown={isCartOpen}
       onCloseComplete={() => setIsCartOpen(false)}
       containerProps={{
-        display: 'flex',
-        flex: '1',
-        flexDirection: 'column',
+        display: "flex",
+        flex: "1",
+        flexDirection: "column",
       }}
     >
       <Pane zIndex={1} flexShrink={0} elevation={0} backgroundColor="white">
@@ -82,15 +124,15 @@ const Cart: FC<Props> = ({
       </Pane>
 
       {!cart?.products.length ? 
-      <div data-cy="message-no-products" style={{ display: 'table', margin: '50px auto' }}>
+      <div data-cy="message-no-products" style={{ display: "table", margin: "50px auto" }}>
         You have not added any product yet
       </div>
       : (
       <Pane flex="1" overflowY="scroll" background="tint1" padding={16}>
         <div className="cart-products-container">
           <div className="cart-products-title" style={{ alignItems: "baseline" }}>
-            <p>{`Account Founds:`}</p>
-            <Button is={Link} to="" boxShadow="box-shadow: 0 0 0 2px #d6e0ff">ADD FOUNDS</Button>
+            <p>{`Account Funds: ${currency.symbol + " " + ((userFunds?.funds ?? 0) * currency.quote)}`}</p>
+            <Button onClick={handleAddFunds} boxShadow="box-shadow: 0 0 0 2px #d6e0ff">ADD FUNDS</Button>
           </div>
           <div className="cart-products-title">
             <p>{`Products:`}</p>
@@ -120,9 +162,14 @@ const Cart: FC<Props> = ({
               </div>
             </div>
           ))}
-
+          <div style={{ textAlign: "center" }}>
+            <p>{`Subtotal = ${currency.symbol} ${subTotal}`}</p>
+            <p>{`Taxes = ${currency.symbol} ${taxes}`}</p>
+            <p>{`Total = ${currency.symbol} ${totalPayment}`}</p>
+            {remainingFunds <= 0 && (<p style={{ color: "red" }}>Insufficient funds, please add more</p>)}
+          </div>
           <div className="payment-button">
-            <Button appearance="primary" intent="danger" marginTop={10}>Proceed to payment</Button>
+            <Button disabled={remainingFunds <= 0} onClick={handlePayment} appearance="primary" intent="danger" marginTop={10}>Proceed to payment</Button>
           </div>
         </div>
       </Pane>            
@@ -131,4 +178,4 @@ const Cart: FC<Props> = ({
   );
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Cart);
+export const Cart = connect(mapStateToProps, mapDispatchToProps)(UserCart);

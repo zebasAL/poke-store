@@ -12,6 +12,7 @@
     "vercel:env:pull": "vercel env pull"
   },
   "dependencies": {
+    "@bugsnag/js": "^7.18.0",
     "@typescript-eslint/eslint-plugin": "^5.13.0",
     "@typescript-eslint/parser": "^5.0.0",
     "axios": "^1.1.3",

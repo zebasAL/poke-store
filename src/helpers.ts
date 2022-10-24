@@ -15,3 +15,8 @@ export const maxStat = (pokemonStat: any) => {
   if (statName === 'speed') return ((value * 100) / 180).toFixed();
   return "0";
 };
+
+/**
+ * random number between 5 and 15;
+ */
+export const newFunds: number = Number((Math.random() * (15 - 5) + 5).toFixed(2));
